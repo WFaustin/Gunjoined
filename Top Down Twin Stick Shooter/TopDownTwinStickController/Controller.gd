@@ -3,6 +3,8 @@ extends Spatial
 const BULLET = preload("res://TopDownTwinStickController/Bullet.tscn")
 
 export(NodePath) var PlayerPath  = "" #You must specify this in the inspector!
+export(NodePath) var NonPlayerPath  = "" #You must specify this in the inspector!
+export(NodePath) var RodPath  = "" #You must specify this in the inspector!
 export(NodePath) var CameraPath  = ""
 export(NodePath) var MeshInstancePath  = ""
 export(float) var MovementSpeed = 15
@@ -15,7 +17,9 @@ export(float) var MinZoom = 1.5
 export(float) var ZoomSpeed = 2
 export(int) var playerNum = 1
 
-var Player
+var Player : KinematicBody
+var NonPlayer : KinematicBody
+var Rod : KinematicBody
 var Camera
 var MeshInstance
 var BulletPosition
@@ -42,6 +46,8 @@ enum ROTATION_INPUT{MOUSE, JOYSTICK, MOVE_DIR}
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 	Player = get_node(PlayerPath)
+	NonPlayer = get_node(NonPlayerPath)
+	Rod = get_node(RodPath)
 	Camera = get_node(CameraPath)
 	MeshInstance = get_node(MeshInstancePath)
 	BulletPosition = MeshInstance.get_child(0)
@@ -140,12 +146,6 @@ func _process(delta):
 
 func _physics_process(delta):
 	if playerNum == 1:
-		#Rotation[Camera]
-		CameraRotation = RotationSpeed * delta
-		if (Input.is_action_pressed("rotate_left")):
-			InnerGimbal.rotate(Vector3.UP, CameraRotation)
-		elif (Input.is_action_pressed("rotate_right")):
-			InnerGimbal.rotate(Vector3.UP, -CameraRotation)
 	
 		#Movement
 		var CameraTransform = Camera.get_global_transform()
@@ -170,10 +170,8 @@ func _physics_process(delta):
 		CurrentVerticalSpeed.y += gravity * delta * JumpAcceleration
 		Movement += CurrentVerticalSpeed
 		Player.move_and_slide(Movement,Vector3.UP)
+		NonPlayer.move_and_slide(Movement,Vector3.UP)
+		Rod.move_and_slide(Movement,Vector3.UP)
 		if Player.is_on_floor() :
 			CurrentVerticalSpeed.y = 0
 			IsAirborne = false
-	
-		#Zoom
-		ActualZoom = lerp(ActualZoom, ZoomFactor, delta * ZoomSpeed)
-		InnerGimbal.set_scale(Vector3(ActualZoom,ActualZoom,ActualZoom))

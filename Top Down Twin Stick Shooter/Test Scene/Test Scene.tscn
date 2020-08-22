@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Test Scene/grey_material.tres" type="Material" id=1]
 [ext_resource path="res://Test Scene/Static cube.tscn" type="PackedScene" id=2]
-[ext_resource path="res://TopDownTwinStickController/test_player.tscn" type="PackedScene" id=3]
+[ext_resource path="res://TopDownTwinStickController/conjoined_players.tscn" type="PackedScene" id=4]
 
 [sub_resource type="PlaneMesh" id=1]
 
@@ -50,32 +50,20 @@ transform = Transform( 0.303202, 0.0667883, -0.121321, 0, 0.292009, 0.160753, 0.
 shadow_enabled = true
 directional_shadow_blend_splits = true
 
-[node name="Player" parent="." instance=ExtResource( 3 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5.0578, 1.85062, 0 )
-
-[node name="Camera" parent="Player/Controller/InnerGimbal" index="0"]
-current = false
-
-[node name="Player2" parent="." instance=ExtResource( 3 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4.77569, 1.85062, 0 )
-
-[node name="Controller" parent="Player2" index="2"]
-playerNum = 2
-
-[node name="Camera" parent="Player2/Controller/InnerGimbal" index="0"]
-pause_mode = 1
-transform = Transform( 0.333333, 0, 0, 0, 3.97497e-09, 0.333333, 0, -0.333333, 3.97497e-09, 0, 7, 0 )
-
 [node name="RayCast" type="RayCast" parent="."]
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, 1.19249e-08, 1, 0, -1, 1.19249e-08, 0, 40, 0 )
 current = true
 
-[editable path="Player"]
+[node name="Players" parent="." instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.56956, 0 )
 
-[editable path="Player/Controller"]
+[node name="Camera" parent="Players/PlayersSkeleton/Player 1/Controller/InnerGimbal" index="0"]
+current = false
 
-[editable path="Player2"]
+[editable path="Players"]
 
-[editable path="Player2/Controller"]
+[editable path="Players/PlayersSkeleton/Player 1/Controller"]
+
+[editable path="Players/PlayersSkeleton/Player 2/Controller 2"]
