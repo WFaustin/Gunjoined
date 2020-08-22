@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Test Scene/grey_material.tres" type="Material" id=1]
 [ext_resource path="res://Test Scene/Static cube.tscn" type="PackedScene" id=2]
-[ext_resource path="res://TopDownTwinStickController/conjoined_players.tscn" type="PackedScene" id=4]
+[ext_resource path="res://TopDownTwinStickController/players_with_hinge.tscn" type="PackedScene" id=3]
+[ext_resource path="res://TopDownTwinStickController/Controller_Original.gd" type="Script" id=4]
 
 [sub_resource type="PlaneMesh" id=1]
 
@@ -56,14 +57,15 @@ directional_shadow_blend_splits = true
 transform = Transform( 1, 0, 0, 0, 1.19249e-08, 1, 0, -1, 1.19249e-08, 0, 40, 0 )
 current = true
 
-[node name="Players" parent="." instance=ExtResource( 4 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.56956, 0 )
+[node name="Player" parent="." instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.62397, 2.47277, -1.75118 )
 
-[node name="Camera" parent="Players/PlayersSkeleton/Player 1/Controller/InnerGimbal" index="0"]
-current = false
+[node name="Controller" parent="Player" index="2"]
+script = ExtResource( 4 )
+PlayerPath = NodePath("")
+CameraPath = NodePath("")
+MeshInstancePath = NodePath("")
 
-[editable path="Players"]
+[editable path="Player"]
 
-[editable path="Players/PlayersSkeleton/Player 1/Controller"]
-
-[editable path="Players/PlayersSkeleton/Player 2/Controller 2"]
+[editable path="Player/Controller"]

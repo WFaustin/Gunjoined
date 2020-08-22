@@ -3,8 +3,6 @@ extends Spatial
 const BULLET = preload("res://TopDownTwinStickController/Bullet.tscn")
 
 export(NodePath) var PlayerPath  = "" #You must specify this in the inspector!
-export(NodePath) var NonPlayerPath  = "" #You must specify this in the inspector!
-export(NodePath) var RodPath  = "" #You must specify this in the inspector!
 export(NodePath) var CameraPath  = ""
 export(NodePath) var MeshInstancePath  = ""
 export(float) var MovementSpeed = 15
@@ -17,9 +15,7 @@ export(float) var MinZoom = 1.5
 export(float) var ZoomSpeed = 2
 export(int) var playerNum = 1
 
-var Player : RigidBody
-var NonPlayer : RigidBody
-var Rod : RigidBody
+var Player : KinematicBody
 var Camera
 var MeshInstance
 var BulletPosition
@@ -46,8 +42,6 @@ enum ROTATION_INPUT{MOUSE, JOYSTICK, MOVE_DIR}
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 	Player = get_node(PlayerPath)
-	NonPlayer = get_node(NonPlayerPath)
-	Rod = get_node(RodPath)
 	Camera = get_node(CameraPath)
 	MeshInstance = get_node(MeshInstancePath)
 	BulletPosition = MeshInstance.get_child(0)
@@ -167,9 +161,7 @@ func _physics_process(delta):
 		Movement = Speed
 		CurrentVerticalSpeed.y += gravity * delta * JumpAcceleration
 		Movement += CurrentVerticalSpeed
-		Player.add_force(Movement, Vector3.UP)
-		NonPlayer.add_force(Movement, Vector3.UP)
-		Rod.add_force(Movement, Vector3.UP)
-		#if Player.is_on_floor() :
-		#	CurrentVerticalSpeed.y = 0
-		#	IsAirborne = false
+		Player.slide_and_move(Movement, Vector3.UP)
+		if Player.is_on_floor() :
+			CurrentVerticalSpeed.y = 0
+			IsAirborne = false
