@@ -14,7 +14,7 @@
 transform = Transform( 3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0 )
 
 [node name="Floor" type="MeshInstance" parent="Level"]
-transform = Transform( 10, 0, 0, 0, 1, 0, 0, 0, 10, 0, 0, 0 )
+transform = Transform( 16.6813, 0, 0, 0, 1, 0, 0, 0, 10, 0, 0, 0 )
 mesh = SubResource( 1 )
 material/0 = ExtResource( 1 )
 
@@ -25,16 +25,16 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
 shape = SubResource( 2 )
 
 [node name="Static cube" parent="Level" instance=ExtResource( 2 )]
-transform = Transform( 10, 0, 0, 0, 2.43099, 0, 0, 0, 0.5, 0.0638711, 2.41676, -9.5 )
+transform = Transform( 16.4308, 0, 0, 0, 2.43099, 0, 0, 0, 0.5, 0.0638711, 2.41676, -9.5 )
 
 [node name="Static cube2" parent="Level" instance=ExtResource( 2 )]
-transform = Transform( 9.89832, 0, 0, 0, 2.4815, 0, 0, 0, 0.5, -0.0568873, 2.44339, 9.434 )
+transform = Transform( 16.1229, 0, 0, 0, 2.4815, 0, 0, 0, 0.5, -0.0568873, 2.44339, 9.434 )
 
 [node name="Static cube3" parent="Level" instance=ExtResource( 2 )]
-transform = Transform( -0.074227, 0, -0.499983, 0, 2.5, 0, 8.99969, 0, -0.00412372, 9.5, 2.5, 0 )
+transform = Transform( -0.074227, 0, -0.499983, 0, 2.5, 0, 8.99969, 0, -0.00412372, 15, 2.5, 0 )
 
 [node name="Static cube4" parent="Level" instance=ExtResource( 2 )]
-transform = Transform( -0.074227, 0, -0.499983, 0, 2.5, 0, 8.99969, 0, -0.00412372, -9.5, 2.5, 0 )
+transform = Transform( -0.074227, 0, -0.499983, 0, 2.5, 0, 8.99969, 0, -0.00412372, -15, 2.5, 0 )
 
 [node name="Static cube5" parent="Level" instance=ExtResource( 2 )]
 transform = Transform( -0.840681, 0, -0.541531, 0, 2, 0, 0.541531, 0, -0.840681, 1.60711, 2, -4.52622 )
@@ -51,7 +51,10 @@ shadow_enabled = true
 directional_shadow_blend_splits = true
 
 [node name="Player" parent="." instance=ExtResource( 3 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.85062, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5.0578, 1.85062, 0 )
+
+[node name="Camera" parent="Player/Controller/InnerGimbal" index="0"]
+current = false
 
 [node name="Player2" parent="." instance=ExtResource( 3 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4.77569, 1.85062, 0 )
@@ -59,8 +62,20 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4.77569, 1.85062, 0 )
 [node name="Controller" parent="Player2" index="2"]
 playerNum = 2
 
+[node name="Camera" parent="Player2/Controller/InnerGimbal" index="0"]
+pause_mode = 1
+transform = Transform( 0.333333, 0, 0, 0, 3.97497e-09, 0.333333, 0, -0.333333, 3.97497e-09, 0, 7, 0 )
+
 [node name="RayCast" type="RayCast" parent="."]
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, 1.19249e-08, 1, 0, -1, 1.19249e-08, 0, 40, 0 )
+current = true
 
 [editable path="Player"]
 
+[editable path="Player/Controller"]
+
 [editable path="Player2"]
+
+[editable path="Player2/Controller"]
