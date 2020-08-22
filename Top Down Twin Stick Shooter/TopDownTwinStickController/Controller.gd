@@ -14,6 +14,7 @@ export(float) var MaxZoom = 0.5
 export(float) var MinZoom = 1.5
 export(float) var ZoomSpeed = 2
 export(int) var playerNum = 1
+export(bool) var usingKeyboard = false; 
 
 var Player
 var Camera
@@ -42,16 +43,80 @@ enum ROTATION_INPUT{MOUSE, JOYSTICK, MOVE_DIR}
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 	Player = get_node(PlayerPath)
+	setProperInput()
 	Camera = get_node(CameraPath)
 	MeshInstance = get_node(MeshInstancePath)
 	BulletPosition = MeshInstance.get_child(0)
 	RayCast = get_node("/root/TestScene/RayCast")
 	InnerGimbal =  $InnerGimbal
 
+func setProperInput():
+	var s = Input.get_connected_joypads()
+	for i in s:
+		if playerNum - 1 == i:
+			print("Player" + String(playerNum))
+			#var allevent = InputMap.get_actions()
+			#for e in allevent:
+			#	print(e)
+			var leftevent = InputMap.get_action_list("move_left")
+			print(leftevent)
+			var left = Input.get_joy_axis(i, JOY_AXIS_0)
+			print(left)
+			#InputMap.action_add_event(leftevent, left)
+		#	var rightevent = InputMap.get_action_list("input/move_right"); 
+		#	var right = Input.get_joy_axis(i, JOY_AXIS_0)
+		#	InputMap.action_add_event(rightevent[0], right)
+		#	var upevent = InputMap.get_action_list("input/move_up"); 
+		#	var up = Input.get_joy_axis(i, JOY_AXIS_1)
+		#	InputMap.action_add_event(upevent[0], up)
+		#	var downevent = InputMap.get_action_list("input/move_back"); 
+		#	var down = Input.get_joy_axis(i, JOY_AXIS_1)
+		#	InputMap.action_add_event(downevent[0], down)
+
+func isProperPlayerDevice(eventName):
+	pass
+
 func _unhandled_input(event):
+
+	var delta = 0.05;
+	#Rotation[Camera]
+	CameraRotation = RotationSpeed * delta
+	if (event.device == playerNum - 1 and Input.is_action_pressed("rotate_left")):
+		InnerGimbal.rotate(Vector3.UP, CameraRotation)
+	elif (event.device == playerNum - 1 and Input.is_action_pressed("rotate_right")):
+		InnerGimbal.rotate(Vector3.UP, -CameraRotation)
+			#Movement
+	var CameraTransform = Camera.get_global_transform()
+	if(event.device == playerNum - 1 and Input.is_action_pressed("move_up")):
+		Direction += -CameraTransform.basis[2]
+	if(event.device == playerNum - 1 and Input.is_action_pressed("move_back")):
+		Direction += CameraTransform.basis[2]
+	if(event.device == playerNum - 1 and Input.is_action_pressed("move_left")):
+		Direction += -CameraTransform.basis[0]
+	if(event.device == playerNum - 1 and  Input.is_action_pressed("move_right")):
+		Direction += CameraTransform.basis[0]
+	Direction.y = 0
+	LastDirection = Direction.normalized()
+	var MaxSpeed = MovementSpeed * Direction.normalized()
+	Accelerate = Deacceleration
+	if(Direction.dot(Speed) > 0):
+		Accelerate = Acceleration
+	Direction = Vector3.ZERO
+	Speed = Speed.linear_interpolate(MaxSpeed, delta * Accelerate)
+	Movement = Player.transform.basis * (Speed)
+	Movement = Speed
+	CurrentVerticalSpeed.y += gravity * delta * JumpAcceleration
+	Movement += CurrentVerticalSpeed
+	Player.move_and_slide(Movement,Vector3.UP)
+	if Player.is_on_floor() :
+		CurrentVerticalSpeed.y = 0
+		IsAirborne = false
+			#Zoom
+	ActualZoom = lerp(ActualZoom, ZoomFactor, delta * ZoomSpeed)
+	InnerGimbal.set_scale(Vector3(ActualZoom,ActualZoom,ActualZoom))
 	
 	#Rotation Mesh with Joystick
-	if event is InputEventJoypadMotion :
+	if event is InputEventJoypadMotion:
 		var horizontal = Input.get_action_strength("look_right") - Input.get_action_strength("look_left")
 		var vertical = Input.get_action_strength("look_up") - Input.get_action_strength("look_back")
 		if abs(horizontal) > Joystick_Deadzone or abs(vertical) > Joystick_Deadzone:
@@ -139,41 +204,46 @@ func _process(delta):
 		IsAirborne = true
 
 func _physics_process(delta):
-	if playerNum == 1:
+	#if playerNum <= 1:
 		#Rotation[Camera]
-		CameraRotation = RotationSpeed * delta
-		if (Input.is_action_pressed("rotate_left")):
-			InnerGimbal.rotate(Vector3.UP, CameraRotation)
-		elif (Input.is_action_pressed("rotate_right")):
-			InnerGimbal.rotate(Vector3.UP, -CameraRotation)
+	#	CameraRotation = RotationSpeed * delta
+	#	if (Input.is_action_pressed("rotate_left")):
+	#		InnerGimbal.rotate(Vector3.UP, CameraRotation)
+	#	elif (Input.is_action_pressed("rotate_right")):
+	#		InnerGimbal.rotate(Vector3.UP, -CameraRotation)
 	
 		#Movement
-		var CameraTransform = Camera.get_global_transform()
-		if(Input.is_action_pressed("move_up")):
-			Direction += -CameraTransform.basis[2]
-		if(Input.is_action_pressed("move_back")):
-			Direction += CameraTransform.basis[2]
-		if(Input.is_action_pressed("move_left")):
-			Direction += -CameraTransform.basis[0]
-		if(Input.is_action_pressed("move_right")):
-			Direction += CameraTransform.basis[0]
-		Direction.y = 0
-		LastDirection = Direction.normalized()
-		var MaxSpeed = MovementSpeed * Direction.normalized()
-		Accelerate = Deacceleration
-		if(Direction.dot(Speed) > 0):
-			Accelerate = Acceleration
-		Direction = Vector3.ZERO
-		Speed = Speed.linear_interpolate(MaxSpeed, delta * Accelerate)
-		Movement = Player.transform.basis * (Speed)
-		Movement = Speed
-		CurrentVerticalSpeed.y += gravity * delta * JumpAcceleration
-		Movement += CurrentVerticalSpeed
-		Player.move_and_slide(Movement,Vector3.UP)
-		if Player.is_on_floor() :
-			CurrentVerticalSpeed.y = 0
-			IsAirborne = false
-	
+	#	var CameraTransform = Camera.get_global_transform()
+	#	if(Input.is_action_pressed("move_up")):
+	#		Direction += -CameraTransform.basis[2]
+	#	if(Input.is_action_pressed("move_back")):
+	#		Direction += CameraTransform.basis[2]
+	#	if(Input.is_action_pressed("move_left")):
+	#		Direction += -CameraTransform.basis[0]
+	#	if(Input.is_action_pressed("move_right")):
+	#		Direction += CameraTransform.basis[0]
+	#	Direction.y = 0
+	#	LastDirection = Direction.normalized()
+	#	var MaxSpeed = MovementSpeed * Direction.normalized()
+	#	Accelerate = Deacceleration
+	#	if(Direction.dot(Speed) > 0):
+	#		Accelerate = Acceleration
+	#	Direction = Vector3.ZERO
+	#	Speed = Speed.linear_interpolate(MaxSpeed, delta * Accelerate)
+	#	Movement = Player.transform.basis * (Speed)
+	#	Movement = Speed
+	#	CurrentVerticalSpeed.y += gravity * delta * JumpAcceleration
+	#	Movement += CurrentVerticalSpeed
+	#	Player.move_and_slide(Movement,Vector3.UP)
+	#	if Player.is_on_floor() :
+	#		CurrentVerticalSpeed.y = 0
+	#		IsAirborne = false
+	#
 		#Zoom
-		ActualZoom = lerp(ActualZoom, ZoomFactor, delta * ZoomSpeed)
-		InnerGimbal.set_scale(Vector3(ActualZoom,ActualZoom,ActualZoom))
+	#	ActualZoom = lerp(ActualZoom, ZoomFactor, delta * ZoomSpeed)
+	#	InnerGimbal.set_scale(Vector3(ActualZoom,ActualZoom,ActualZoom))
+	pass
+
+
+func dealWithMovement(delta):
+	pass
