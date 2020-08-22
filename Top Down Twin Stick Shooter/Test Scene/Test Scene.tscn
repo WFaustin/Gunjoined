@@ -53,4 +53,14 @@ directional_shadow_blend_splits = true
 [node name="Player" parent="." instance=ExtResource( 3 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.85062, 0 )
 
+[node name="Player2" parent="." instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4.77569, 1.85062, 0 )
+
+[node name="Controller" parent="Player2" index="2"]
+playerNum = 2
+
 [node name="RayCast" type="RayCast" parent="."]
+
+[editable path="Player"]
+
+[editable path="Player2"]
