@@ -1,9 +1,8 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Test Scene/grey_material.tres" type="Material" id=1]
 [ext_resource path="res://Test Scene/Static cube.tscn" type="PackedScene" id=2]
-[ext_resource path="res://TopDownTwinStickController/players_with_hinge.tscn" type="PackedScene" id=3]
-[ext_resource path="res://TopDownTwinStickController/Controller_Original.gd" type="Script" id=4]
+[ext_resource path="res://Conjoined_Players.tscn" type="PackedScene" id=3]
 
 [sub_resource type="PlaneMesh" id=1]
 
@@ -25,25 +24,29 @@ material/0 = ExtResource( 1 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
 shape = SubResource( 2 )
 
-[node name="Static cube" parent="Level" instance=ExtResource( 2 )]
+[node name="Walls" type="Spatial" parent="Level"]
+
+[node name="TopWall" parent="Level/Walls" instance=ExtResource( 2 )]
 transform = Transform( 16.4308, 0, 0, 0, 2.43099, 0, 0, 0, 0.5, 0.0638711, 2.41676, -9.5 )
 
-[node name="Static cube2" parent="Level" instance=ExtResource( 2 )]
+[node name="BottomWall" parent="Level/Walls" instance=ExtResource( 2 )]
 transform = Transform( 16.1229, 0, 0, 0, 2.4815, 0, 0, 0, 0.5, -0.0568873, 2.44339, 9.434 )
 
-[node name="Static cube3" parent="Level" instance=ExtResource( 2 )]
+[node name="RightWall" parent="Level/Walls" instance=ExtResource( 2 )]
 transform = Transform( -0.074227, 0, -0.499983, 0, 2.5, 0, 8.99969, 0, -0.00412372, 15, 2.5, 0 )
 
-[node name="Static cube4" parent="Level" instance=ExtResource( 2 )]
+[node name="LeftWall" parent="Level/Walls" instance=ExtResource( 2 )]
 transform = Transform( -0.074227, 0, -0.499983, 0, 2.5, 0, 8.99969, 0, -0.00412372, -15, 2.5, 0 )
 
-[node name="Static cube5" parent="Level" instance=ExtResource( 2 )]
+[node name="Obstacle_Blocks" type="Spatial" parent="Level"]
+
+[node name="ObstacleBlock1" parent="Level/Obstacle_Blocks" instance=ExtResource( 2 )]
 transform = Transform( -0.840681, 0, -0.541531, 0, 2, 0, 0.541531, 0, -0.840681, 1.60711, 2, -4.52622 )
 
-[node name="Static cube6" parent="Level" instance=ExtResource( 2 )]
+[node name="ObstacleBlock2" parent="Level/Obstacle_Blocks" instance=ExtResource( 2 )]
 transform = Transform( 0.282327, 0, 0.479659, 0, 1, 0, -0.959318, 0, 0.141163, 5.68626, 1, 6.92052 )
 
-[node name="Static cube7" parent="Level" instance=ExtResource( 2 )]
+[node name="ObstacleBlock3" parent="Level/Obstacle_Blocks" instance=ExtResource( 2 )]
 transform = Transform( -0.596717, 0, 0.401226, 0, 1, 0, -0.802451, 0, -0.298359, -7.13092, 1, 5.02082 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="Level"]
@@ -54,18 +57,15 @@ directional_shadow_blend_splits = true
 [node name="RayCast" type="RayCast" parent="."]
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 1.19249e-08, 1, 0, -1, 1.19249e-08, 0, 40, 0 )
+transform = Transform( 1, 0, 0, 0, -1.62921e-07, 1, 0, -1, -1.62921e-07, 0, 40, 0 )
 current = true
 
-[node name="Player" parent="." instance=ExtResource( 3 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.62397, 2.47277, -1.75118 )
+[node name="Conjoined_Players" parent="." instance=ExtResource( 3 )]
 
-[node name="Controller" parent="Player" index="2"]
-script = ExtResource( 4 )
-PlayerPath = NodePath("")
-CameraPath = NodePath("")
-MeshInstancePath = NodePath("")
+[node name="Camera" parent="Conjoined_Players/Player1/Controller/CameraGimbal" index="0"]
+current = false
 
-[editable path="Player"]
+[node name="Camera" parent="Conjoined_Players/Player2/Controller/CameraGimbal" index="0"]
+current = false
 
-[editable path="Player/Controller"]
+[editable path="Conjoined_Players"]

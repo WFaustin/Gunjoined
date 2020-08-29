@@ -3,8 +3,8 @@ extends Spatial
 const BULLET = preload("res://TopDownTwinStickController/Bullet.tscn")
 
 export(NodePath) var PlayerPath  = "" #You must specify this in the inspector!
-export(NodePath) var NonPlayerPath  = "" #You must specify this in the inspector!
-export(NodePath) var RodPath  = "" #You must specify this in the inspector!
+#export(NodePath) var NonPlayerPath  = "" #You must specify this in the inspector!
+#export(NodePath) var RodPath  = "" #You must specify this in the inspector!
 export(NodePath) var CameraPath  = ""
 export(NodePath) var MeshInstancePath  = ""
 export(float) var MovementSpeed = 15
@@ -17,9 +17,9 @@ export(float) var MinZoom = 1.5
 export(float) var ZoomSpeed = 2
 export(int) var playerNum = 1
 
-var Player : RigidBody
-var NonPlayer : RigidBody
-var Rod : RigidBody
+var Player
+var NonPlayer
+var Rod
 var Camera
 var MeshInstance
 var BulletPosition
@@ -46,8 +46,8 @@ enum ROTATION_INPUT{MOUSE, JOYSTICK, MOVE_DIR}
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 	Player = get_node(PlayerPath)
-	NonPlayer = get_node(NonPlayerPath)
-	Rod = get_node(RodPath)
+	#NonPlayer = get_node(NonPlayerPath)
+	#Rod = get_node(RodPath)
 	Camera = get_node(CameraPath)
 	MeshInstance = get_node(MeshInstancePath)
 	BulletPosition = MeshInstance.get_child(0)
@@ -94,34 +94,35 @@ func _unhandled_input(event):
 				get_tree().quit()
 
 func rotateMesh(event_data, input_method):
-	match input_method:
-		ROTATION_INPUT.MOUSE:
-			#event_data is mouse position in viewport
-			var rayLength = 100
-			var from = Camera.project_ray_origin(event_data.position)
-			var to = from + Camera.project_ray_normal(event_data.position)*rayLength
-			RayCast.translation = from
-			RayCast.cast_to = to
-			RayCast.force_raycast_update()
-			var collision_point = RayCast.get_collision_point()
-			MeshInstance.look_at(collision_point,Vector3.UP)
-			var rotationDegree = MeshInstance.get_rotation_degrees().y
-			MeshInstance.set_rotation_degrees(Vector3(90,rotationDegree + 180,0))
-		ROTATION_INPUT.JOYSTICK:
-			#event_data is right joystick axis strength
-			var rot = atan2(event_data.y,event_data.x)*180/PI
-			rot += InnerGimbal.get_rotation_degrees().y 
-			rot += 90
-			MeshInstance.set_rotation_degrees(Vector3(90,rot,0))
-		ROTATION_INPUT.MOVE_DIR:
-			#event_data is directional vector to rotate player
-			#Check if Player is moving and new movement is different than last direction
-			if magnitude(event_data) > 0 and LastDirection.dot(event_data.normalized()) != 0:
-				#Rotate in Direction of Movement
-				var angle = atan2(event_data.x, event_data.z)
-				var char_rot = MeshInstance.get_rotation()
-				var rot_y = angle - char_rot.y  
-				MeshInstance.rotate_y(rot_y)
+	if playerNum == 1:
+		match input_method:
+			ROTATION_INPUT.MOUSE:
+				#event_data is mouse position in viewport
+				var rayLength = 100
+				var from = Camera.project_ray_origin(event_data.position)
+				var to = from + Camera.project_ray_normal(event_data.position)*rayLength
+				RayCast.translation = from
+				RayCast.cast_to = to
+				RayCast.force_raycast_update()
+				var collision_point = RayCast.get_collision_point()
+				MeshInstance.look_at(collision_point,Vector3.UP)
+				var rotationDegree = MeshInstance.get_rotation_degrees().y
+				MeshInstance.set_rotation_degrees(Vector3(90,rotationDegree + 180,0))
+			ROTATION_INPUT.JOYSTICK:
+				#event_data is right joystick axis strength
+				var rot = atan2(event_data.y,event_data.x)*180/PI
+				rot += InnerGimbal.get_rotation_degrees().y 
+				rot += 90
+				MeshInstance.set_rotation_degrees(Vector3(90,rot,0))
+			ROTATION_INPUT.MOVE_DIR:
+				#event_data is directional vector to rotate player
+				#Check if Player is moving and new movement is different than last direction
+				if magnitude(event_data) > 0 and LastDirection.dot(event_data.normalized()) != 0:
+					#Rotate in Direction of Movement
+					var angle = atan2(event_data.x, event_data.z)
+					var char_rot = MeshInstance.get_rotation()
+					var rot_y = angle - char_rot.y  
+					MeshInstance.rotate_y(rot_y)
 
 #Helper math function
 func magnitude(vector):
@@ -131,17 +132,18 @@ func magnitude(vector):
 		return sqrt(vector.x*vector.x + vector.z*vector.z)
 
 func _process(delta):
-	#Shoot
-	if (Input.is_action_pressed("shoot")):
-		var bullet = BULLET.instance()
-		get_node("/root/").add_child(bullet)
-		bullet.set_translation(BulletPosition.get_global_transform().origin)
-		bullet.direction = -BulletPosition.get_global_transform().basis.x
-		
-	#Jump
-	if (Input.is_action_pressed("jump")) and not IsAirborne:
-		CurrentVerticalSpeed = Vector3(0,MaxJump,0)
-		IsAirborne = true
+	if playerNum == 1:
+		#Shoot
+		if (Input.is_action_pressed("shoot")):
+			var bullet = BULLET.instance()
+			get_node("/root/").add_child(bullet)
+			bullet.set_translation(BulletPosition.get_global_transform().origin)
+			bullet.direction = BulletPosition.get_global_transform().basis.z
+			
+		#Jump
+		#if (Input.is_action_pressed("jump")) and not IsAirborne:
+		#	CurrentVerticalSpeed = Vector3(0,MaxJump,0)
+		#	IsAirborne = true
 
 func _physics_process(delta):
 	if playerNum == 1:
@@ -167,9 +169,9 @@ func _physics_process(delta):
 		Movement = Speed
 		CurrentVerticalSpeed.y += gravity * delta * JumpAcceleration
 		Movement += CurrentVerticalSpeed
-		Player.add_force(Movement, Vector3.UP)
-		NonPlayer.add_force(Movement, Vector3.UP)
-		Rod.add_force(Movement, Vector3.UP)
-		#if Player.is_on_floor() :
-		#	CurrentVerticalSpeed.y = 0
-		#	IsAirborne = false
+		Player.move_and_slide(Movement, Vector3.UP)
+		#NonPlayer.move_and_slide(Movement, Vector3.UP)
+		#Rod.move_and_slide(Movement, Vector3.UP)
+		if Player.is_on_floor() :
+			CurrentVerticalSpeed.y = 0
+			IsAirborne = false

@@ -161,7 +161,7 @@ func _physics_process(delta):
 		Movement = Speed
 		CurrentVerticalSpeed.y += gravity * delta * JumpAcceleration
 		Movement += CurrentVerticalSpeed
-		Player.slide_and_move(Movement, Vector3.UP)
+		Player.move_and_slide(Movement, Vector3.UP)
 		if Player.is_on_floor() :
 			CurrentVerticalSpeed.y = 0
 			IsAirborne = false
