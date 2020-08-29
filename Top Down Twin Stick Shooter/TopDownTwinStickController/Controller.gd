@@ -3,8 +3,8 @@ extends Spatial
 const BULLET = preload("res://TopDownTwinStickController/Bullet.tscn")
 
 export(NodePath) var PlayerPath  = "" #You must specify this in the inspector!
-#export(NodePath) var NonPlayerPath  = "" #You must specify this in the inspector!
-#export(NodePath) var RodPath  = "" #You must specify this in the inspector!
+export(NodePath) var NonPlayerPath  = "" #You must specify this in the inspector!
+export(NodePath) var RodPivotPath  = "" #You must specify this in the inspector!
 export(NodePath) var CameraPath  = ""
 export(NodePath) var MeshInstancePath  = ""
 export(float) var MovementSpeed = 15
@@ -17,10 +17,10 @@ export(float) var MinZoom = 1.5
 export(float) var ZoomSpeed = 2
 export(int) var playerNum = 1
 
-var Player
-var NonPlayer
-var Rod
-var Camera
+var Player : KinematicBody
+var NonPlayer : KinematicBody
+var RodPivot : HingeJoint
+var Camera : Camera
 var MeshInstance
 var BulletPosition
 var RayCast 
@@ -46,8 +46,8 @@ enum ROTATION_INPUT{MOUSE, JOYSTICK, MOVE_DIR}
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 	Player = get_node(PlayerPath)
-	#NonPlayer = get_node(NonPlayerPath)
-	#Rod = get_node(RodPath)
+	NonPlayer = get_node(NonPlayerPath)
+	RodPivot = get_node(RodPivotPath)
 	Camera = get_node(CameraPath)
 	MeshInstance = get_node(MeshInstancePath)
 	BulletPosition = MeshInstance.get_child(0)
@@ -169,7 +169,15 @@ func _physics_process(delta):
 		Movement = Speed
 		CurrentVerticalSpeed.y += gravity * delta * JumpAcceleration
 		Movement += CurrentVerticalSpeed
-		Player.move_and_slide(Movement, Vector3.UP)
+		print("X Differential for Player and Rod: " , ((Player.get_global_transform().origin.x + Movement.x) - RodPivot.get_global_transform().origin.x))
+		print("Z Differential for Player and Rod: " , ((Player.get_global_transform().origin.z + Movement.z) - RodPivot.get_global_transform().origin.z))
+		print("X Differential for Rod and NonPlayer: " , ((RodPivot.get_global_transform().origin.x + Movement.x) - NonPlayer.get_global_transform().origin.x))
+		print("Z Differential for Rod and NonPlayer: " , ((RodPivot.get_global_transform().origin.z + Movement.z) - NonPlayer.get_global_transform().origin.z))
+		if ((abs((Player.get_global_transform().origin.x + Movement.x) - RodPivot.get_global_transform().origin.x) < 20) && (abs((Player.get_global_transform().origin.z + Movement.z) - RodPivot.get_global_transform().origin.z) < 20)
+		&& (abs((NonPlayer.get_global_transform().origin.x + Movement.x) - RodPivot.get_global_transform().origin.x) < 20) && (abs((NonPlayer.get_global_transform().origin.z + Movement.z) - RodPivot.get_global_transform().origin.z) < 20)):  
+			Player.move_and_slide(Movement)
+		
+		#Player.move_and_slide(Movement, Vector3.UP)
 		#NonPlayer.move_and_slide(Movement, Vector3.UP)
 		#Rod.move_and_slide(Movement, Vector3.UP)
 		if Player.is_on_floor() :

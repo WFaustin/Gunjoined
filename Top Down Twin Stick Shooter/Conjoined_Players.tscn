@@ -21,7 +21,7 @@ script = ExtResource( 2 )
 [node name="P1Joint" type="HingeJoint" parent="."]
 transform = Transform( 1, 0, 0, 0, -1.62921e-07, -1, 0, 1, -1.62921e-07, -4.835, 1.75, 0 )
 nodes/node_a = NodePath("../Player1")
-nodes/node_b = NodePath("../Box")
+nodes/node_b = NodePath("../Rod")
 collision/exclude_nodes = false
 params/bias = 0.99
 angular_limit/upper = 60.0
@@ -30,7 +30,7 @@ angular_limit/lower = -60.0
 [node name="P2Joint" type="HingeJoint" parent="."]
 transform = Transform( 1, 0, 0, 0, -1.62921e-07, -1, 0, 1, -1.62921e-07, 4.835, 1.75, 0 )
 nodes/node_a = NodePath("../Player2")
-nodes/node_b = NodePath("../Box")
+nodes/node_b = NodePath("../Rod")
 collision/exclude_nodes = false
 params/bias = 0.99
 angular_limit/upper = 60.0
@@ -58,13 +58,15 @@ material/0 = null
 transform = Transform( 3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0 )
 script = ExtResource( 3 )
 PlayerPath = NodePath("..")
-CameraPath = NodePath("CameraGimbal/Camera")
+NonPlayerPath = NodePath("../../Player2")
+RodPivotPath = NodePath("../../P1Joint")
+CameraPath = NodePath("InnerGimbal/Camera")
 MeshInstancePath = NodePath("../Body")
 
-[node name="CameraGimbal" type="Spatial" parent="Player1/Controller"]
+[node name="InnerGimbal" type="Spatial" parent="Player1/Controller"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45646, 0 )
 
-[node name="Camera" type="Camera" parent="Player1/Controller/CameraGimbal"]
+[node name="Camera" type="Camera" parent="Player1/Controller/InnerGimbal"]
 transform = Transform( 1, 0, 0, 0, 1.19249e-08, 1, 0, -0.999999, 1.19249e-08, 0, 7, 0 )
 current = true
 
@@ -90,18 +92,20 @@ material/0 = null
 transform = Transform( 3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0 )
 script = ExtResource( 3 )
 PlayerPath = NodePath("..")
-CameraPath = NodePath("CameraGimbal/Camera")
+NonPlayerPath = NodePath("../../Player1")
+RodPivotPath = NodePath("../../P2Joint")
+CameraPath = NodePath("InnerGimbal/Camera")
 MeshInstancePath = NodePath("../Body")
 playerNum = 2
 
-[node name="CameraGimbal" type="Spatial" parent="Player2/Controller"]
+[node name="InnerGimbal" type="Spatial" parent="Player2/Controller"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45646, 0 )
 
-[node name="Camera" type="Camera" parent="Player2/Controller/CameraGimbal"]
+[node name="Camera" type="Camera" parent="Player2/Controller/InnerGimbal"]
 transform = Transform( 1, 0, 0, 0, 1.19249e-08, 1, 0, -0.999999, 1.19249e-08, 0, 7, 0 )
 current = true
 
-[node name="Box" type="RigidBody" parent="."]
+[node name="Rod" type="RigidBody" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0 )
 continuous_cd = true
 can_sleep = false
@@ -109,12 +113,13 @@ axis_lock_linear_y = true
 axis_lock_angular_x = true
 axis_lock_angular_z = true
 
-[node name="CollisionShape" type="CollisionShape" parent="Box"]
+[node name="CollisionShape" type="CollisionShape" parent="Rod"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.000308156, 0, 0 )
 shape = SubResource( 5 )
 
-[node name="CSGBox" type="CSGBox" parent="Box/CollisionShape"]
+[node name="CSGBox" type="CSGBox" parent="Rod/CollisionShape"]
 transform = Transform( 3.4615, 0, 0, 0, 0.170908, 0, 0, 0, 0.602355, 0, 0, 0 )
+use_collision = true
 width = 2.2006
 height = 2.19966
 depth = 0.793836
