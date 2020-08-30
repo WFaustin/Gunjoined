@@ -62,10 +62,4 @@ current = true
 
 [node name="Conjoined_Players" parent="." instance=ExtResource( 3 )]
 
-[node name="Camera" parent="Conjoined_Players/Player1/Controller/CameraGimbal" index="0"]
-current = false
-
-[node name="Camera" parent="Conjoined_Players/Player2/Controller/CameraGimbal" index="0"]
-current = false
-
 [editable path="Conjoined_Players"]
