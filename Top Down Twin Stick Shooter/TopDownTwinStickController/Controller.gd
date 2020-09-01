@@ -40,6 +40,10 @@ var JumpAcceleration = 3
 var IsAirborne = false
 var Joystick_Deadzone = 0.2
 var Mouse_Deadzone = 20
+var rodwidth; 
+var rodwidthMax; 
+var rodwidthMin;
+var distFromPlayer; 
 
 enum ROTATION_INPUT{MOUSE, JOYSTICK, MOVE_DIR}
 
@@ -49,12 +53,16 @@ func _ready():
 	Player = get_node(PlayerPath)
 	NonPlayer = get_node(NonPlayerPath)
 	RodPivot = get_node(RodPivotPath)
-	setProperInput()
+	#setProperInput()
 	Camera = get_node(CameraPath)
 	MeshInstance = get_node(MeshInstancePath)
 	BulletPosition = MeshInstance.get_child(0)
 	RayCast = get_node("/root/TestScene/RayCast")
 	InnerGimbal =  $InnerGimbal
+	rodwidth = get_parent().get_parent().get_node("Rod/CollisionShape/CSGBox").width
+	rodwidthMax = rodwidth + 2; 
+	rodwidthMin = rodwidth - 2; 
+	print(rodwidthMax)
 
 func setProperInput():
 	var s = Input.get_connected_joypads()
@@ -78,6 +86,37 @@ func setProperInput():
 		#	var downevent = InputMap.get_action_list("input/move_back");
 		#	var down = Input.get_joy_axis(i, JOY_AXIS_1)
 		#	InputMap.action_add_event(downevent[0], down)
+
+func calcDistance():
+	var distx = abs(Player.get_global_transform().origin.x - NonPlayer.get_global_transform().origin.x)
+	var distz = abs(Player.get_global_transform().origin.z - NonPlayer.get_global_transform().origin.z)
+	var fullDist = sqrt(pow(distx,2) + pow(distz,2))
+	distFromPlayer = fullDist
+	#print("CalcDistance")
+	#print("X: ", distx)
+	#print("Z: ", distz)
+
+func calcDistWithMovement(move):
+	#var c = a.dot(b)
+	#var d = b.dot(a)  # these are equivalent
+
+	var dotProd = Player.get_global_transform().origin.dot(move)
+
+	#var distx = abs(Player.get_global_transform().origin.x * dotProd *.01 - NonPlayer.get_global_transform().origin.x)
+	#var distz = abs(Player.get_global_transform().origin.z * dotProd *.01 - NonPlayer.get_global_transform().origin.z)
+
+	var distx = abs(Player.get_global_transform().origin.x + move.x - NonPlayer.get_global_transform().origin.x)
+	var distz = abs(Player.get_global_transform().origin.z + move.z - NonPlayer.get_global_transform().origin.z)
+
+	#print("CalcDistWithMovement")
+	#print("X: ", distx)
+	#print("Z: ", distz)
+
+	#var mag = distx.dot(distz)
+	var fullDist = sqrt(pow(distx,2) + pow(distz,2))
+	print(fullDist)
+	return fullDist
+	
 
 func _unhandled_input(event):
 	#Rotation Mesh with Joystick
@@ -182,6 +221,7 @@ func _process(delta):
 				IsAirborne = true
 
 func _physics_process(delta):
+	calcDistance()
 	if playerNum == 1:
 		#Rotation[Camera]
 		CameraRotation = RotationSpeed * delta
@@ -208,7 +248,6 @@ func _physics_process(delta):
 			Accelerate = Acceleration
 		Direction = Vector3.ZERO
 		Speed = Speed.linear_interpolate(MaxSpeed, delta * Accelerate)
-		Movement = Player.transform.basis * (Speed)
 		Movement = Speed
 		CurrentVerticalSpeed.y += gravity * delta * JumpAcceleration
 		Movement += CurrentVerticalSpeed
@@ -220,7 +259,14 @@ func _physics_process(delta):
 		#&& (abs((NonPlayer.get_global_transform().origin.x + Movement.x) - RodPivot.get_global_transform().origin.x) < 20) && (abs((NonPlayer.get_global_transform().origin.z + Movement.z) - RodPivot.get_global_transform().origin.z) < 20)):
 		#	Player.move_and_slide(Movement, Vector3.UP)
 
-		Player.move_and_slide(Movement, Vector3.UP)
+		#var distx = abs(Player.get_global_transform().origin.x - NonPlayer.get_global_transform().origin.x)
+		#var disty = abs(Player.get_global_transform().origin.y - NonPlayer.get_global_transform().origin.y)
+		#var fullDist = sqrt(pow(distx,2) + pow(disty,2))
+		#distFromPlayer = fullDist
+
+		#if distFromPlayer <= rodwidthMax || (calcDistWithMovement(Movement) <= rodwidthMax && calcDistWithMovement(Movement) > rodwidthMin):
+		if (distFromPlayer <= rodwidthMax && calcDistWithMovement(Movement) >= rodwidthMin) || (distFromPlayer >= rodwidthMin && calcDistWithMovement(Movement) <= rodwidthMax):
+			Player.move_and_slide(Movement, Vector3.UP)
 		#NonPlayer.move_and_slide(Movement, Vector3.UP)
 		#Rod.move_and_slide(Movement, Vector3.UP)
 		if Player.is_on_floor() :
@@ -257,15 +303,15 @@ func _physics_process(delta):
 			Accelerate = Acceleration
 		Direction = Vector3.ZERO
 		Speed = Speed.linear_interpolate(MaxSpeed, delta * Accelerate)
-		Movement = Player.transform.basis * (Speed)
 		Movement = Speed
 		CurrentVerticalSpeed.y += gravity * delta * JumpAcceleration
 		Movement += CurrentVerticalSpeed
 		#if ((abs((Player.get_global_transform().origin.x + Movement.x) - RodPivot.get_global_transform().origin.x) < 20) && (abs((Player.get_global_transform().origin.z + Movement.z) - RodPivot.get_global_transform().origin.z) < 20)
 		#&& (abs((NonPlayer.get_global_transform().origin.x + Movement.x) - RodPivot.get_global_transform().origin.x) < 20) && (abs((NonPlayer.get_global_transform().origin.z + Movement.z) - RodPivot.get_global_transform().origin.z) < 20)):
 		#	Player.move_and_slide(Movement, Vector3.UP)
-
-		Player.move_and_slide(Movement, Vector3.UP)
+		#if distFromPlayer <= rodwidthMax || (calcDistWithMovement(Movement) <= rodwidthMax && calcDistWithMovement(Movement) > rodwidthMin):
+		if (distFromPlayer <= rodwidthMax && calcDistWithMovement(Movement) >= rodwidthMin) || (distFromPlayer >= rodwidthMin && calcDistWithMovement(Movement) <= rodwidthMax):
+			Player.move_and_slide(Movement, Vector3.UP)
 		#NonPlayer.move_and_slide(Movement, Vector3.UP)
 		#Rod.move_and_slide(Movement, Vector3.UP)
 		if Player.is_on_floor() :

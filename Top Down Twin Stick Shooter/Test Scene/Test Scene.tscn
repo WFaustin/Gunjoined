@@ -62,4 +62,10 @@ current = true
 
 [node name="Conjoined_Players" parent="." instance=ExtResource( 3 )]
 
+[node name="CSGBox" parent="Conjoined_Players/Rod/CollisionShape" index="0"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+width = 7.65
+height = 0.65
+depth = 0.65
+
 [editable path="Conjoined_Players"]
