@@ -16,6 +16,7 @@ export(float) var MaxZoom = 0.5
 export(float) var MinZoom = 1.5
 export(float) var ZoomSpeed = 2
 export(int) var playerNum = 1
+export(float) var gunShotFrequency = .1
 export(bool) var usingKeyboard = false;
 
 var Player : KinematicBody
@@ -40,10 +41,14 @@ var JumpAcceleration = 3
 var IsAirborne = false
 var Joystick_Deadzone = 0.2
 var Mouse_Deadzone = 20
-var rodwidth; 
-var rodwidthMax; 
-var rodwidthMin;
-var distFromPlayer; 
+var time = 0
+var canShoot = true
+var rodwidth
+var rodwidthMax
+var rodwidthMin
+var distFromPlayer
+var isDead = false
+var ignoreNonPlayer = false
 
 enum ROTATION_INPUT{MOUSE, JOYSTICK, MOVE_DIR}
 
@@ -62,7 +67,7 @@ func _ready():
 	rodwidth = get_parent().get_parent().get_node("Rod/CollisionShape/CSGBox").width
 	rodwidthMax = rodwidth + 2; 
 	rodwidthMin = rodwidth - 2; 
-	print(rodwidthMax)
+	#print(rodwidthMax)
 
 func setProperInput():
 	var s = Input.get_connected_joypads()
@@ -73,9 +78,9 @@ func setProperInput():
 			#for e in allevent:
 			#	print(e)
 			var leftevent = InputMap.get_action_list("move_left")
-			print(leftevent)
+			#print(leftevent)
 			var left = Input.get_joy_axis(i, JOY_AXIS_0)
-			print(left)
+			#print(left)
 			#InputMap.action_add_event(leftevent, left)
 		#	var rightevent = InputMap.get_action_list("input/move_right");
 		#	var right = Input.get_joy_axis(i, JOY_AXIS_0)
@@ -114,12 +119,13 @@ func calcDistWithMovement(move):
 
 	#var mag = distx.dot(distz)
 	var fullDist = sqrt(pow(distx,2) + pow(distz,2))
-	print(fullDist)
+	#print(fullDist)
 	return fullDist
 	
 
 func _unhandled_input(event):
 	#Rotation Mesh with Joystick
+
 	if event is InputEventJoypadMotion:
 		var horizontal = Input.get_action_strength("look_right") - Input.get_action_strength("look_left")
 		var vertical = Input.get_action_strength("look_up") - Input.get_action_strength("look_back")
@@ -195,30 +201,33 @@ func magnitude(vector):
 		return sqrt(vector.x*vector.x + vector.z*vector.z)
 
 func _process(delta):
+	time += delta
 	if playerNum == 1:
 		#Shoot
-		if (Input.is_action_pressed("shoot")):
+		if (Input.is_action_pressed("shoot") && time > gunShotFrequency):
+			var bullet = BULLET.instance()
+			get_node("/root/").add_child(bullet)
+			bullet.set_translation(BulletPosition.get_global_transform().origin)
+			bullet.direction = BulletPosition.get_global_transform().basis.y
+			time = 0
+
+		#Jump
+		if (Input.is_action_pressed("jump")) and not IsAirborne:
+			CurrentVerticalSpeed = Vector3(0,MaxJump,0)
+			IsAirborne = true
+	elif playerNum == 2:
+		#Shoot
+		if (Input.is_action_pressed("shootP2")):
 			var bullet = BULLET.instance()
 			get_node("/root/").add_child(bullet)
 			bullet.set_translation(BulletPosition.get_global_transform().origin)
 			bullet.direction = BulletPosition.get_global_transform().basis.z
+			bullet.parent = Player.name
 
 		#Jump
-			if (Input.is_action_pressed("jump")) and not IsAirborne:
-				CurrentVerticalSpeed = Vector3(0,MaxJump,0)
-				IsAirborne = true
-		elif playerNum == 2:
-		#Shoot
-			if (Input.is_action_pressed("shootP2")):
-				var bullet = BULLET.instance()
-				get_node("/root/").add_child(bullet)
-				bullet.set_translation(BulletPosition.get_global_transform().origin)
-				bullet.direction = BulletPosition.get_global_transform().basis.z
-
-		#Jump
-			if (Input.is_action_pressed("jumpP2")) and not IsAirborne:
-				CurrentVerticalSpeed = Vector3(0,MaxJump,0)
-				IsAirborne = true
+		if (Input.is_action_pressed("jumpP2")) and not IsAirborne:
+			CurrentVerticalSpeed = Vector3(0,MaxJump,0)
+			IsAirborne = true
 
 func _physics_process(delta):
 	calcDistance()
@@ -312,8 +321,6 @@ func _physics_process(delta):
 		#if distFromPlayer <= rodwidthMax || (calcDistWithMovement(Movement) <= rodwidthMax && calcDistWithMovement(Movement) > rodwidthMin):
 		if (distFromPlayer <= rodwidthMax && calcDistWithMovement(Movement) >= rodwidthMin) || (distFromPlayer >= rodwidthMin && calcDistWithMovement(Movement) <= rodwidthMax):
 			Player.move_and_slide(Movement, Vector3.UP)
-		#NonPlayer.move_and_slide(Movement, Vector3.UP)
-		#Rod.move_and_slide(Movement, Vector3.UP)
 		if Player.is_on_floor() :
 			CurrentVerticalSpeed.y = 0
 			IsAirborne = false
@@ -322,3 +329,7 @@ func _physics_process(delta):
 		ActualZoom = lerp(ActualZoom, ZoomFactor, delta * ZoomSpeed)
 		InnerGimbal.set_scale(Vector3(ActualZoom,ActualZoom,ActualZoom))
 	pass
+
+
+func _on_Area_body_entered(body):
+	pass # Replace with function body.

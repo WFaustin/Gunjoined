@@ -1,0 +1,100 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://TopDownTwinStickController/Turret.gd" type="Script" id=1]
+
+[sub_resource type="SpatialMaterial" id=1]
+flags_transparent = true
+params_specular_mode = 4
+albedo_color = Color( 1, 0, 0, 0.666667 )
+
+[sub_resource type="CylinderShape" id=2]
+radius = 0.667794
+height = 1.87277
+
+[sub_resource type="CylinderShape" id=3]
+radius = 6.39815
+
+[node name="Turret" type="KinematicBody"]
+script = ExtResource( 1 )
+HeadNodePath = NodePath("Head")
+
+[node name="Head" type="Spatial" parent="."]
+
+[node name="Body" type="CSGBox" parent="Head"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.005361, 1.78794, 0.0023888 )
+width = 0.341284
+height = 0.406379
+depth = 0.703169
+
+[node name="Gun" type="CSGCylinder" parent="Head/Body"]
+transform = Transform( 1, 0, 0, 0, -1.62921e-07, -1, 0, 1, -1.62921e-07, 0.00479162, 0.000701189, -0.283313 )
+radius = 0.0665077
+height = 0.542
+sides = 12
+
+[node name="BulletContainer" type="CSGBox" parent="Head"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.197668, 1.79145, -0.00428735 )
+width = 0.0530955
+height = 0.20438
+depth = 0.348149
+material = SubResource( 1 )
+
+[node name="AntennaConnection" type="CSGCylinder" parent="Head"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12466, 2.03868, 0.298663 )
+radius = 0.0187785
+height = 0.263154
+sides = 12
+
+[node name="AntennaTop" type="CSGCylinder" parent="Head"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.121319, 2.16978, 0.303526 )
+radius = 0.0312649
+height = 0.0217706
+sides = 12
+
+[node name="Neck" type="CSGBox" parent="."]
+transform = Transform( 0.115, 0, 0, 0, -5.02681e-09, -0.315, 0, 0.115, -1.37691e-08, 0, 1.31508, 0 )
+
+[node name="Body" type="CSGBox" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.918294, 0 )
+width = 1.03184
+height = 0.20108
+depth = 1.18407
+
+[node name="Legs" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.398919, 0 )
+
+[node name="CSGBox" type="CSGBox" parent="Legs"]
+transform = Transform( 1, 0, 0, 0, 0.690364, 0, 0, 0, 1, 0.376688, 0.807475, 0.454387 )
+width = 0.277362
+height = 1.22689
+depth = 0.277
+
+[node name="CSGBox2" type="CSGBox" parent="Legs"]
+transform = Transform( 1, 0, 0, 0, 0.690364, 0, 0, 0, 1, 0.376688, 0.807475, -0.45268 )
+width = 0.277362
+height = 1.22689
+depth = 0.277
+
+[node name="CSGBox3" type="CSGBox" parent="Legs"]
+transform = Transform( 1, 0, 0, 0, 0.690364, 0, 0, 0, 1, -0.377176, 0.807475, -0.45268 )
+width = 0.277362
+height = 1.22689
+depth = 0.277
+
+[node name="CSGBox4" type="CSGBox" parent="Legs"]
+transform = Transform( 1, 0, 0, 0, 0.690364, 0, 0, 0, 1, -0.377604, 0.815664, 0.451448 )
+width = 0.277362
+height = 1.22689
+depth = 0.277
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.10112, 0 )
+shape = SubResource( 2 )
+
+[node name="Area" type="Area" parent="."]
+
+[node name="CollisionShape" type="CollisionShape" parent="Area"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.00326, 0 )
+shape = SubResource( 3 )
+[connection signal="body_entered" from="Area" to="." method="_on_Area_body_entered"]
+[connection signal="body_exited" from="Area" to="." method="_on_Area_body_exited"]

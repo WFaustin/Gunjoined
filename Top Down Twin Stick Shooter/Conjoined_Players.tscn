@@ -1,9 +1,11 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Test Scene/Conjoined_Players.gd" type="Script" id=2]
 [ext_resource path="res://TopDownTwinStickController/Controller.gd" type="Script" id=3]
 
 [sub_resource type="CapsuleShape" id=1]
+
+[sub_resource type="SphereShape" id=6]
 
 [sub_resource type="CapsuleMesh" id=2]
 
@@ -11,6 +13,8 @@
 roughness = 0.0
 
 [sub_resource type="PrismMesh" id=4]
+
+[sub_resource type="SphereShape" id=7]
 
 [sub_resource type="BoxShape" id=5]
 extents = Vector3( 3.81609, 0.191749, 0.232773 )
@@ -43,6 +47,12 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -4.835, 1.7, 0 )
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0 )
 shape = SubResource( 1 )
 
+[node name="Area" type="Area" parent="Player1"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Player1/Area"]
+transform = Transform( 1.2, 0, 0, 0, 1, 0, 0, 0, 1.2, 0, 0, 0 )
+shape = SubResource( 6 )
+
 [node name="Body" type="MeshInstance" parent="Player1"]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0 )
 mesh = SubResource( 2 )
@@ -50,7 +60,7 @@ skeleton = NodePath("../..")
 material/0 = SubResource( 3 )
 
 [node name="Gun" type="MeshInstance" parent="Player1/Body"]
-transform = Transform( -0.0335723, 0, -0.498872, 0, 1, 0, 0.498872, 0, -0.0335723, 0, 1, -0.5 )
+transform = Transform( -8.14604e-08, 0, -0.5, 0, 1, 0, 0.5, 0, -8.14604e-08, 0, 1, -0.5 )
 mesh = SubResource( 4 )
 material/0 = null
 
@@ -77,6 +87,12 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4.835, 1.7, 0 )
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0 )
 shape = SubResource( 1 )
 
+[node name="Area" type="Area" parent="Player2"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Player2/Area"]
+transform = Transform( 1.2, 0, 0, 0, 1, 0, 0, 0, 1.2, 0, 0, 0 )
+shape = SubResource( 7 )
+
 [node name="Body" type="MeshInstance" parent="Player2"]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0 )
 mesh = SubResource( 2 )
@@ -84,7 +100,7 @@ skeleton = NodePath("../..")
 material/0 = SubResource( 3 )
 
 [node name="Gun" type="MeshInstance" parent="Player2/Body"]
-transform = Transform( -0.0335723, 0, -0.498872, 0, 1, 0, 0.498872, 0, -0.0335723, 0, 1, -0.5 )
+transform = Transform( -8.14604e-08, 0, -0.5, 0, 1, 0, 0.5, 0, -8.14604e-08, 0, 1, -0.5 )
 mesh = SubResource( 4 )
 material/0 = null
 
@@ -123,3 +139,5 @@ use_collision = true
 width = 2.2006
 height = 2.19966
 depth = 0.793836
+[connection signal="body_entered" from="Player1/Area" to="Player1/Controller" method="_on_Area_body_entered"]
+[connection signal="body_entered" from="Player2/Area" to="Player2/Controller" method="_on_Area_body_entered"]
