@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Test Scene/grey_material.tres" type="Material" id=1]
 [ext_resource path="res://Test Scene/Static cube.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Conjoined_Players.tscn" type="PackedScene" id=3]
 [ext_resource path="res://TopDownTwinStickController/Turret.tscn" type="PackedScene" id=4]
+[ext_resource path="res://TopDownTwinStickController/Pickup.tscn" type="PackedScene" id=5]
 
 [sub_resource type="PlaneMesh" id=1]
 
@@ -28,7 +29,7 @@ shape = SubResource( 2 )
 [node name="Walls" type="Spatial" parent="Level"]
 
 [node name="TopWall" parent="Level/Walls" instance=ExtResource( 2 )]
-transform = Transform( 16.4308, 0, 0, 0, 2.43099, 0, 0, 0, 0.5, 0.0638711, 2.41676, -9.5 )
+transform = Transform( 16.4308, 0, 0, 0, 2.43099, 0, 0, 0, 0.5, 0.187855, 2.26401, -9.52965 )
 
 [node name="BottomWall" parent="Level/Walls" instance=ExtResource( 2 )]
 transform = Transform( 16.1229, 0, 0, 0, 2.4815, 0, 0, 0, 0.5, -0.0568873, 2.44339, 9.434 )
@@ -49,6 +50,9 @@ transform = Transform( 0.282327, 0, 0.479659, 0, 1, 0, -0.959318, 0, 0.141163, 5
 
 [node name="ObstacleBlock3" parent="Level/Obstacle_Blocks" instance=ExtResource( 2 )]
 transform = Transform( -0.596717, 0, 0.401226, 0, 1, 0, -0.802451, 0, -0.298359, -7.13092, 1, 5.02082 )
+
+[node name="Pickup" parent="Level/Obstacle_Blocks" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5.93723, 1.64085, -0.673488 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="Level"]
 transform = Transform( 0.303202, 0.0667883, -0.121321, 0, 0.292009, 0.160753, 0.13849, -0.146222, 0.265614, 0, 1.76457, 0 )
