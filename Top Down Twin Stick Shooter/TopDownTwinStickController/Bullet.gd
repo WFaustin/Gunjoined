@@ -21,7 +21,7 @@ func _process(delta):
 		if ((collision.collider.name == "Player1" || collision.collider.name == "Player2") && parent == "Turret"):
 			collision.collider.queue_free()
 		#print("Collided with Object")	
-		#queue_free()
+		queue_free()
 
 func _on_Timer_timeout():
 	queue_free()

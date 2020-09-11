@@ -4,6 +4,8 @@ const BULLET = preload("res://TopDownTwinStickController/Bullet.tscn")
 
 export(NodePath) var PlayerPath  = "" #You must specify this in the inspector!
 export(NodePath) var NonPlayerPath  = "" #You must specify this in the inspector!
+var hardcodedPlayerPath; 
+var hardcodedNonPlayerPath
 export(NodePath) var RodPivotPath  = "" #You must specify this in the inspector!
 export(NodePath) var CameraPath  = ""
 export(NodePath) var MeshInstancePath  = ""
@@ -52,6 +54,12 @@ var ignoreNonPlayer = false
 
 enum ROTATION_INPUT{MOUSE, JOYSTICK, MOVE_DIR}
 
+
+func setMovementSpeed(num):
+	MovementSpeed = num; 
+
+func setGunShotFrequency(num):
+	gunShotFrequency = num; 
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
@@ -217,13 +225,12 @@ func _process(delta):
 			IsAirborne = true
 	elif playerNum == 2:
 		#Shoot
-		if (Input.is_action_pressed("shootP2")):
+		if (Input.is_action_pressed("shootP2") && time > gunShotFrequency):
 			var bullet = BULLET.instance()
 			get_node("/root/").add_child(bullet)
 			bullet.set_translation(BulletPosition.get_global_transform().origin)
-			bullet.direction = BulletPosition.get_global_transform().basis.z
-			bullet.parent = Player.name
-
+			bullet.direction = BulletPosition.get_global_transform().basis.y
+			time = 0
 		#Jump
 		if (Input.is_action_pressed("jumpP2")) and not IsAirborne:
 			CurrentVerticalSpeed = Vector3(0,MaxJump,0)
@@ -329,6 +336,8 @@ func _physics_process(delta):
 		ActualZoom = lerp(ActualZoom, ZoomFactor, delta * ZoomSpeed)
 		InnerGimbal.set_scale(Vector3(ActualZoom,ActualZoom,ActualZoom))
 	pass
+
+
 
 
 func _on_Area_body_entered(body):
