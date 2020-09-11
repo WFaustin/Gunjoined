@@ -16,7 +16,7 @@
 transform = Transform( 3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0 )
 
 [node name="Floor" type="MeshInstance" parent="Level"]
-transform = Transform( 16.6813, 0, 0, 0, 1, 0, 0, 0, 10, 0, 0, 0 )
+transform = Transform( 16.2479, -0.201352, -1.03639, 3.1103, 0.97278, -1.376, 2.14395, 0.114701, 9.85051, 0, 0, 0 )
 mesh = SubResource( 1 )
 material/0 = ExtResource( 1 )
 
