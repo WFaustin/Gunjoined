@@ -52,7 +52,7 @@ func _process(delta):
 		
 	if (target != null):
 		if (visionTime > IgnoreTime && shotTime > ShotFrequency):
-			#print("Time to shoot!")
+			print("Time to shoot!")
 			$Head.look_at(Vector3(target.global_transform.origin.x, 0, -target.global_transform.origin.z), Vector3.UP)
 			#print("The head is looking at: ", $Head.global_transform.basis.get_euler())
 			var bullet = BULLET.instance()

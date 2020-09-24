@@ -220,9 +220,9 @@ func _process(delta):
 			time = 0
 
 		#Jump
-		if (Input.is_action_pressed("jump")) and not IsAirborne:
-			CurrentVerticalSpeed = Vector3(0,MaxJump,0)
-			IsAirborne = true
+		#if (Input.is_action_pressed("jump")) and not IsAirborne:
+		#	CurrentVerticalSpeed = Vector3(0,MaxJump,0)
+		#	IsAirborne = true
 	elif playerNum == 2:
 		#Shoot
 		if (Input.is_action_pressed("shootP2") && time > gunShotFrequency):
@@ -232,9 +232,9 @@ func _process(delta):
 			bullet.direction = BulletPosition.get_global_transform().basis.y
 			time = 0
 		#Jump
-		if (Input.is_action_pressed("jumpP2")) and not IsAirborne:
-			CurrentVerticalSpeed = Vector3(0,MaxJump,0)
-			IsAirborne = true
+		#if (Input.is_action_pressed("jumpP2")) and not IsAirborne:
+		#	CurrentVerticalSpeed = Vector3(0,MaxJump,0)
+		#	IsAirborne = true
 
 func _physics_process(delta):
 	calcDistance()
@@ -283,6 +283,9 @@ func _physics_process(delta):
 		#if distFromPlayer <= rodwidthMax || (calcDistWithMovement(Movement) <= rodwidthMax && calcDistWithMovement(Movement) > rodwidthMin):
 		if (distFromPlayer <= rodwidthMax && calcDistWithMovement(Movement) >= rodwidthMin) || (distFromPlayer >= rodwidthMin && calcDistWithMovement(Movement) <= rodwidthMax):
 			Player.move_and_slide(Movement, Vector3.UP)
+		else :
+			Player.move_and_slide(Movement*.3, Vector3.UP)
+			NonPlayer.move_and_slide(Movement*.3, Vector3.UP)
 		#NonPlayer.move_and_slide(Movement, Vector3.UP)
 		#Rod.move_and_slide(Movement, Vector3.UP)
 		if Player.is_on_floor() :
@@ -328,6 +331,9 @@ func _physics_process(delta):
 		#if distFromPlayer <= rodwidthMax || (calcDistWithMovement(Movement) <= rodwidthMax && calcDistWithMovement(Movement) > rodwidthMin):
 		if (distFromPlayer <= rodwidthMax && calcDistWithMovement(Movement) >= rodwidthMin) || (distFromPlayer >= rodwidthMin && calcDistWithMovement(Movement) <= rodwidthMax):
 			Player.move_and_slide(Movement, Vector3.UP)
+		else :
+			Player.move_and_slide(Movement*.3, Vector3.UP)
+			NonPlayer.move_and_slide(Movement*.3, Vector3.UP)
 		if Player.is_on_floor() :
 			CurrentVerticalSpeed.y = 0
 			IsAirborne = false

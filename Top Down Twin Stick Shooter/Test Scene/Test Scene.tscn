@@ -21,6 +21,7 @@ mesh = SubResource( 1 )
 material/0 = ExtResource( 1 )
 
 [node name="FloorStaticBody" type="StaticBody" parent="Level/Floor"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.121471, 0 )
 
 [node name="CollisionShape" type="CollisionShape" parent="Level/Floor/FloorStaticBody"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
@@ -73,8 +74,12 @@ current = false
 [node name="Camera" parent="Conjoined_Players/Player2/Controller/InnerGimbal" index="0"]
 current = false
 
+[node name="Rod" parent="Conjoined_Players" index="4"]
+transform = Transform( 0.809164, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0 )
+
 [node name="CSGBox" parent="Conjoined_Players/Rod/CollisionShape" index="0"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+use_collision = false
 width = 7.65
 height = 0.65
 depth = 0.65

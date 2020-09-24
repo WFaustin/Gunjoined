@@ -19,9 +19,13 @@ func _process(delta):
 			collision.collider.queue_free()
 			
 		if ((collision.collider.name == "Player1" || collision.collider.name == "Player2") && parent == "Turret"):
-			collision.collider.queue_free()
-		#print("Collided with Object")	
-		queue_free()
+			get_tree().reload_current_scene()
+			#collision.collider.queue_free()
+		print("Collided with Object")
+		print(collision.collider.name)
+		if (collision.collider.name != "Player1" || collision.collider.name != "Player2" || collision.collider.name != "Rod" || collision.collider.name != "Gun" || collision.collider.name != "Body"):
+			queue_free()
+		
 
 func _on_Timer_timeout():
 	queue_free()
